@@ -1,0 +1,455 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================
+   Design System — Liquid Glass
+   Apple-inspired dark glass morphism
+   ============================================= */
+
+:root {
+  /* Typography */
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  /* Color tokens */
+  --glass-bg: linear-gradient(145deg, rgba(20, 20, 20, 0.75), rgba(0, 0, 0, 0.85));
+  --glass-bg-hover: linear-gradient(145deg, rgba(30, 30, 30, 0.78), rgba(10, 10, 10, 0.88));
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-strong: rgba(255, 255, 255, 0.22);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
+  --glass-blur: blur(24px) saturate(180%);
+  --glass-radius: 16px;
+
+  /* Scheme */
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #050505;
+}
+
+/* =============================================
+   Base Resets
+   ============================================= */
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #050505;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Text selection */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: white;
+}
+
+/* Scrollbar — thin, glass-themed */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* =============================================
+   Liquid Glass — Core Utility
+   ============================================= */
+
+.liquid-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-top-color: var(--glass-border-strong);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.liquid-glass:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-strong);
+  box-shadow: 0 14px 48px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* Inset glass — for nested panels like route options */
+.liquid-glass-inset {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-color: rgba(255, 255, 255, 0.12);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.liquid-glass-inset:hover {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* =============================================
+   Map Control Overrides — Liquid Glass
+   ============================================= */
+
+.maplibregl-ctrl-group {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.maplibregl-ctrl button {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-top-color: var(--glass-border-strong) !important;
+  border-radius: var(--glass-radius) !important;
+  box-shadow: var(--glass-shadow) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.maplibregl-ctrl button:hover {
+  background: var(--glass-bg-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+  border-color: var(--glass-border-strong) !important;
+}
+
+.maplibregl-ctrl button:active {
+  transform: translateY(0);
+}
+
+/* Map control icons */
+.maplibregl-ctrl-icon {
+  filter: invert(1) brightness(1.5);
+  opacity: 0.8;
+  transform: scale(0.85);
+  transition: opacity 0.2s;
+}
+
+.maplibregl-ctrl button:hover .maplibregl-ctrl-icon {
+  opacity: 1;
+}
+
+/* Hide map attribution for cleaner look */
+.maplibregl-ctrl-attrib {
+  display: none !important;
+}
+
+/* =============================================
+   Futuristic Markers
+   ============================================= */
+
+.marker-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.marker-core {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+.marker-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  z-index: 1;
+}
+
+/* Start Marker — Blue/Cyan */
+.marker-start .marker-core {
+  background: radial-gradient(circle at 30% 30%, #60a5fa, #2563eb);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), 0 0 24px rgba(37, 99, 235, 0.3) inset;
+}
+
+.marker-start .marker-ring {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+/* Destination Marker — Red/Orange */
+.marker-dest .marker-core {
+  background: radial-gradient(circle at 30% 30%, #f87171, #dc2626);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6), 0 0 24px rgba(185, 28, 28, 0.3) inset;
+}
+
+.marker-dest .marker-ring {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  animation-delay: 0.5s;
+}
+
+/* Pulse Animation */
+@keyframes pulse-ring {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+    border-width: 3px;
+  }
+
+  100% {
+    width: 56px;
+    height: 56px;
+    opacity: 0;
+    border-width: 0px;
+  }
+}
+
+/* =============================================
+   Animations
+   ============================================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* =============================================
+   Pothole Popup — Liquid Glass
+   ============================================= */
+
+.pothole-popup .maplibregl-popup-content {
+  background: linear-gradient(160deg, rgba(22, 22, 26, 0.96), rgba(10, 10, 14, 0.98)) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.pothole-popup .maplibregl-popup-tip {
+  border-top-color: rgba(22, 22, 26, 0.96) !important;
+  border-bottom-color: rgba(22, 22, 26, 0.96) !important;
+}
+
+.pothole-popup .maplibregl-popup-close-button {
+  color: rgba(255, 255, 255, 0.2) !important;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: color 0.15s;
+  z-index: 10;
+}
+
+.pothole-popup .maplibregl-popup-close-button:hover {
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
+}
+
+/* ── Card structure ───────────────────────── */
+
+.pp-card {
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.pp-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pp-body {
+  padding: 14px 16px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Top: severity badge + type chip ─────── */
+
+.pp-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pp-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pp-type-chip span {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.02em;
+}
+
+.pp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 7px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+.pp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pp-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Gauge row: segments + value ─────────── */
+
+.pp-gauge-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pp-gauge {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.gauge-seg {
+  height: 7px;
+  flex: 1;
+  border-radius: 3.5px;
+  transition: all 0.2s ease;
+}
+
+.pp-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.pp-shock-val {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.pp-val-unit {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ── Divider ─────────────────────────────── */
+
+.pp-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+}
+
+/* ── Info rows: icon + text ──────────────── */
+
+.pp-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.pp-info-row svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.pp-info-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* =============================================
+   Focus Styles — Accessible but on-brand
+   ============================================= */
+
+input:focus-visible {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.1);
+  outline-offset: 1px;
+  border-radius: inherit;
+}

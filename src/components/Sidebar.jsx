@@ -1,0 +1,222 @@
+import React, { useState } from 'react';
+import { Search, X, Route, Clock, ArrowUpDown } from 'lucide-react';
+import { cn } from '../lib/utils';
+import LocationSearch from './LocationSearch';
+
+const Sidebar = ({
+    onLocationSelect,
+    onRouteSelect,
+    foundRoutes = [],
+    selectedRouteIndex = 0,
+    onSelectRoute
+}) => {
+    const [start, setStart] = useState(null);
+    const [end, setEnd] = useState(null);
+    const [resetKey, setResetKey] = useState(0);
+
+    const formatDistance = (meters) => {
+        if (meters < 1000) return `${Math.round(meters)} m`;
+        return `${(meters / 1000).toFixed(1)} km`;
+    };
+
+    const formatDuration = (seconds) => {
+        const mins = Math.round(seconds / 60);
+        if (mins < 60) return `${mins} min`;
+        const hrs = Math.floor(mins / 60);
+        const remainingMins = mins % 60;
+        return `${hrs}h ${remainingMins}m`;
+    };
+
+    const handleStartSelect = (location) => {
+        setStart(location);
+        if (location && end) {
+            onRouteSelect(location, end);
+        } else if (location) {
+            onLocationSelect(location);
+        } else {
+            onLocationSelect(null);
+        }
+    };
+
+    const handleEndSelect = (location) => {
+        setEnd(location);
+        if (start && location) {
+            onRouteSelect(start, location);
+        } else if (location) {
+            onLocationSelect(location);
+        } else {
+            onLocationSelect(null);
+        }
+    };
+
+    const handleSwap = () => {
+        const prevStart = start;
+        const prevEnd = end;
+        setStart(prevEnd);
+        setEnd(prevStart);
+        // Increment resetKey to remount LocationSearch components with swapped values
+        setResetKey(prev => prev + 1);
+        // Re-trigger routing with swapped locations
+        if (prevStart && prevEnd) {
+            onRouteSelect(prevEnd, prevStart);
+        } else if (prevEnd) {
+            onLocationSelect(prevEnd);
+        } else if (prevStart) {
+            onLocationSelect(prevStart);
+        }
+    };
+
+    const handleExit = () => {
+        setStart(null);
+        setEnd(null);
+        if (onLocationSelect) onLocationSelect(null);
+        if (onRouteSelect) onRouteSelect(null, null);
+        setResetKey(prev => prev + 1);
+    };
+
+    return (
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-3 w-96 text-white pointer-events-auto">
+            {/* Unified Panel — search, routes, and clear all in one glass card */}
+            <div className="liquid-glass rounded-2xl p-3.5 flex flex-col gap-3">
+                {/* Navigation Inputs — Google Maps style */}
+                <div className="flex items-stretch gap-2.5">
+                    {/* Left: Icons column (circle, dots, pin) */}
+                    <div className="flex flex-col items-center pt-[14px] pb-[14px] gap-0 shrink-0 w-5">
+                        {/* Starting point — hollow circle */}
+                        <div className="w-[14px] h-[14px] rounded-full border-2 border-white/50 shrink-0" />
+
+                        {/* Vertical dots connector */}
+                        <div className="flex flex-col items-center gap-[3px] py-[5px] flex-1 justify-center">
+                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
+                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
+                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
+                        </div>
+
+                        {/* Destination — red pin icon */}
+                        <div className="shrink-0 flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#a78bfa" stroke="none">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* Center: Input fields */}
+                    <div className="flex flex-col gap-2.5 flex-1 min-w-0">
+                        <div className="z-20 relative">
+                            <LocationSearch
+                                key={`start-${resetKey}`}
+                                placeholder="Choose starting point..."
+                                onLocationSelect={handleStartSelect}
+                                defaultValue={start?.display_name || ''}
+                                hideIcon
+                            />
+                        </div>
+
+                        <div className="z-10 relative">
+                            <LocationSearch
+                                key={`end-${resetKey}`}
+                                placeholder="Choose destination..."
+                                onLocationSelect={handleEndSelect}
+                                icon={Search}
+                                defaultValue={end?.display_name || ''}
+                                hideIcon
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right: Swap button */}
+                    <div className="flex items-center shrink-0">
+                        <button
+                            onClick={handleSwap}
+                            className="nav-swap-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border border-white/10 hover:border-white/25 bg-white/[0.04] hover:bg-white/[0.08] active:scale-90"
+                            title="Swap starting point and destination"
+                        >
+                            <ArrowUpDown className="w-[15px] h-[15px] text-white/50 hover:text-white/80 transition-colors duration-200" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Route Options — integrated */}
+                {foundRoutes.length > 0 && (
+                    <div className="flex flex-col gap-1.5 pt-1 animate-fade-in">
+                        {/* Subtle divider */}
+                        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-1" />
+
+                        {foundRoutes.map((r, i) => {
+                            const isActive = i === selectedRouteIndex;
+                            const isFastest = i === 0;
+                            return (
+                                <button
+                                    key={i}
+                                    onClick={() => onSelectRoute(i)}
+                                    className={cn(
+                                        "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer border",
+                                        isActive
+                                            ? "liquid-glass-inset border-white/20 shadow-[0_0_16px_rgba(99,102,241,0.08)]"
+                                            : "border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]"
+                                    )}
+                                >
+                                    {/* Active indicator dot */}
+                                    <div className={cn(
+                                        "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-200",
+                                        isActive
+                                            ? "bg-indigo-400 shadow-[0_0_6px_rgba(99,102,241,0.5)]"
+                                            : "bg-white/10"
+                                    )} />
+
+                                    {/* Duration */}
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                        <Clock className={cn(
+                                            "size-3.5 shrink-0 transition-colors duration-200",
+                                            isActive ? "text-white/60" : "text-white/20"
+                                        )} />
+                                        <span className={cn(
+                                            "text-sm font-semibold tabular-nums whitespace-nowrap tracking-tight transition-colors duration-200",
+                                            isActive ? "text-white/90" : "text-white/40"
+                                        )}>
+                                            {formatDuration(r.duration)}
+                                        </span>
+                                    </div>
+
+                                    {/* Distance */}
+                                    <div className={cn(
+                                        "flex items-center gap-1 text-xs tabular-nums whitespace-nowrap transition-colors duration-200",
+                                        isActive ? "text-white/40" : "text-white/20"
+                                    )}>
+                                        <Route className="size-3 shrink-0" />
+                                        {formatDistance(r.distance)}
+                                    </div>
+
+                                    {/* Fastest badge */}
+                                    {isFastest && (
+                                        <span className={cn(
+                                            "ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-lg shrink-0 tracking-wide transition-all duration-200",
+                                            isActive
+                                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shadow-[0_0_8px_rgba(16,185,129,0.1)]"
+                                                : "bg-emerald-500/5 text-emerald-500/30 border border-emerald-500/10"
+                                        )}>
+                                            Fastest
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Clear Route Button — always has a red tint */}
+                {(start || end) && (
+                    <button
+                        onClick={handleExit}
+                        className="w-full py-2 rounded-xl bg-red-500/10 hover:bg-red-500/25 text-red-400/70 hover:text-red-300 border border-red-500/15 hover:border-red-500/35 transition-all duration-200 text-xs font-medium flex items-center justify-center gap-1.5 hover:shadow-[0_0_12px_rgba(239,68,68,0.1)]"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                        Clear Route
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default Sidebar;
