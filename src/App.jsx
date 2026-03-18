@@ -2,13 +2,16 @@ import React from 'react';
 import MapComponent from './components/MapComponent';
 import Sidebar from './components/Sidebar';
 import PotholeStats from './components/PotholeStats';
+import ThemeToggle from './components/ThemeToggle';
 import usePotholes from './hooks/usePotholes';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
-function App() {
+function AppContent() {
   const [targetLocation, setTargetLocation] = React.useState(null);
   const [route, setRoute] = React.useState(null);
   const [foundRoutes, setFoundRoutes] = React.useState([]);
   const [selectedRouteIndex, setSelectedRouteIndex] = React.useState(0);
+  const { theme } = useTheme();
 
   const { potholes, loading: potholesLoading } = usePotholes();
 
@@ -29,8 +32,13 @@ function App() {
     setTargetLocation(location);
   };
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#050505] text-white">
+    <div
+      className="relative w-full h-screen overflow-hidden"
+      style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}
+    >
       {/* Map Layer */}
       <div className="absolute inset-0 z-0">
         <MapComponent
@@ -42,15 +50,24 @@ function App() {
         />
       </div>
 
-      {/* Vignette overlay — subtle dark edges for depth */}
+      {/* Vignette overlay — adapts to theme */}
       <div className="absolute inset-0 pointer-events-none z-[1]"
         style={{
-          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
+          background: isDark
+            ? 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)'
+            : 'radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.08) 100%)'
         }}
       />
 
       {/* Bottom fade — grounds the UI */}
-      <div className="absolute inset-x-0 bottom-0 h-32 pointer-events-none z-[1] bg-gradient-to-t from-black/30 to-transparent" />
+      <div
+        className="absolute inset-x-0 bottom-0 h-32 pointer-events-none z-[1]"
+        style={{
+          background: isDark
+            ? 'linear-gradient(to top, rgba(0,0,0,0.3), transparent)'
+            : 'linear-gradient(to top, rgba(240,242,245,0.3), transparent)'
+        }}
+      />
 
       {/* Floating UI — above overlays */}
       <Sidebar
@@ -61,9 +78,20 @@ function App() {
         onSelectRoute={setSelectedRouteIndex}
       />
 
-      {/* Pothole Stats Panel — bottom right */}
+      {/* Theme Toggle */}
+      <ThemeToggle />
+
+      {/* Pothole Stats Panel — bottom left */}
       <PotholeStats potholes={potholes} loading={potholesLoading} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

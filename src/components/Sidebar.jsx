@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, X, Route, Clock, ArrowUpDown } from 'lucide-react';
 import { cn } from '../lib/utils';
 import LocationSearch from './LocationSearch';
+import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = ({
     onLocationSelect,
@@ -13,6 +14,8 @@ const Sidebar = ({
     const [start, setStart] = useState(null);
     const [end, setEnd] = useState(null);
     const [resetKey, setResetKey] = useState(0);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const formatDistance = (meters) => {
         if (meters < 1000) return `${Math.round(meters)} m`;
@@ -54,9 +57,7 @@ const Sidebar = ({
         const prevEnd = end;
         setStart(prevEnd);
         setEnd(prevStart);
-        // Increment resetKey to remount LocationSearch components with swapped values
         setResetKey(prev => prev + 1);
-        // Re-trigger routing with swapped locations
         if (prevStart && prevEnd) {
             onRouteSelect(prevEnd, prevStart);
         } else if (prevEnd) {
@@ -74,8 +75,22 @@ const Sidebar = ({
         setResetKey(prev => prev + 1);
     };
 
+    // Theme-aware color helpers
+    const textColor = 'var(--color-text)';
+    const textMuted = 'var(--color-text-muted)';
+    const textSubtle = 'var(--color-text-subtle)';
+    const textFaint = 'var(--color-text-faint)';
+    const borderSubtle = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)';
+    const borderHover = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.15)';
+    const bgSubtle = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
+    const bgHover = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)';
+    const dotBorderColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.35)';
+    const connectorDotColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+
     return (
-        <div className="absolute top-4 left-4 z-20 flex flex-col gap-3 w-96 text-white pointer-events-auto">
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-3 w-96 pointer-events-auto"
+            style={{ color: textColor }}
+        >
             {/* Unified Panel — search, routes, and clear all in one glass card */}
             <div className="liquid-glass rounded-2xl p-3.5 flex flex-col gap-3">
                 {/* Navigation Inputs — Google Maps style */}
@@ -83,16 +98,18 @@ const Sidebar = ({
                     {/* Left: Icons column (circle, dots, pin) */}
                     <div className="flex flex-col items-center pt-[14px] pb-[14px] gap-0 shrink-0 w-5">
                         {/* Starting point — hollow circle */}
-                        <div className="w-[14px] h-[14px] rounded-full border-2 border-white/50 shrink-0" />
+                        <div className="w-[14px] h-[14px] rounded-full border-2 shrink-0"
+                            style={{ borderColor: dotBorderColor }}
+                        />
 
                         {/* Vertical dots connector */}
                         <div className="flex flex-col items-center gap-[3px] py-[5px] flex-1 justify-center">
-                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
-                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
-                            <div className="w-[3px] h-[3px] rounded-full bg-white/20" />
+                            <div className="w-[3px] h-[3px] rounded-full" style={{ background: connectorDotColor }} />
+                            <div className="w-[3px] h-[3px] rounded-full" style={{ background: connectorDotColor }} />
+                            <div className="w-[3px] h-[3px] rounded-full" style={{ background: connectorDotColor }} />
                         </div>
 
-                        {/* Destination — red pin icon */}
+                        {/* Destination — purple pin icon */}
                         <div className="shrink-0 flex items-center justify-center">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="#a78bfa" stroke="none">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
@@ -128,10 +145,24 @@ const Sidebar = ({
                     <div className="flex items-center shrink-0">
                         <button
                             onClick={handleSwap}
-                            className="nav-swap-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer border border-white/10 hover:border-white/25 bg-white/[0.04] hover:bg-white/[0.08] active:scale-90"
+                            className="nav-swap-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-90"
+                            style={{
+                                border: `1px solid ${borderSubtle}`,
+                                background: bgSubtle,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = borderHover;
+                                e.currentTarget.style.background = bgHover;
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = borderSubtle;
+                                e.currentTarget.style.background = bgSubtle;
+                            }}
                             title="Swap starting point and destination"
                         >
-                            <ArrowUpDown className="w-[15px] h-[15px] text-white/50 hover:text-white/80 transition-colors duration-200" />
+                            <ArrowUpDown className="w-[15px] h-[15px] transition-colors duration-200"
+                                style={{ color: textMuted }}
+                            />
                         </button>
                     </div>
                 </div>
@@ -140,7 +171,13 @@ const Sidebar = ({
                 {foundRoutes.length > 0 && (
                     <div className="flex flex-col gap-1.5 pt-1 animate-fade-in">
                         {/* Subtle divider */}
-                        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-1" />
+                        <div className="h-px mb-1"
+                            style={{
+                                background: isDark
+                                    ? 'linear-gradient(to right, transparent, rgba(255,255,255,0.10), transparent)'
+                                    : 'linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent)'
+                            }}
+                        />
 
                         {foundRoutes.map((r, i) => {
                             const isActive = i === selectedRouteIndex;
@@ -152,37 +189,53 @@ const Sidebar = ({
                                     className={cn(
                                         "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer border",
                                         isActive
-                                            ? "liquid-glass-inset border-white/20 shadow-[0_0_16px_rgba(99,102,241,0.08)]"
-                                            : "border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]"
+                                            ? "liquid-glass-inset shadow-[0_0_16px_rgba(99,102,241,0.08)]"
+                                            : "border-transparent"
                                     )}
+                                    style={isActive ? {
+                                        borderColor: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.12)',
+                                    } : undefined}
+                                    onMouseEnter={(e) => {
+                                        if (!isActive) {
+                                            e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
+                                            e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isActive) {
+                                            e.currentTarget.style.background = '';
+                                            e.currentTarget.style.borderColor = 'transparent';
+                                        }
+                                    }}
                                 >
                                     {/* Active indicator dot */}
                                     <div className={cn(
-                                        "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-200",
-                                        isActive
-                                            ? "bg-indigo-400 shadow-[0_0_6px_rgba(99,102,241,0.5)]"
-                                            : "bg-white/10"
-                                    )} />
+                                        "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-200"
+                                    )}
+                                        style={{
+                                            background: isActive ? '#818cf8' : (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'),
+                                            boxShadow: isActive ? '0 0 6px rgba(99,102,241,0.5)' : 'none',
+                                        }}
+                                    />
 
                                     {/* Duration */}
                                     <div className="flex items-center gap-1.5 min-w-0">
                                         <Clock className={cn(
-                                            "size-3.5 shrink-0 transition-colors duration-200",
-                                            isActive ? "text-white/60" : "text-white/20"
-                                        )} />
-                                        <span className={cn(
-                                            "text-sm font-semibold tabular-nums whitespace-nowrap tracking-tight transition-colors duration-200",
-                                            isActive ? "text-white/90" : "text-white/40"
-                                        )}>
+                                            "size-3.5 shrink-0 transition-colors duration-200"
+                                        )}
+                                            style={{ color: isActive ? textMuted : textSubtle }}
+                                        />
+                                        <span className="text-sm font-semibold tabular-nums whitespace-nowrap tracking-tight transition-colors duration-200"
+                                            style={{ color: isActive ? 'var(--color-text-strong)' : textMuted }}
+                                        >
                                             {formatDuration(r.duration)}
                                         </span>
                                     </div>
 
                                     {/* Distance */}
-                                    <div className={cn(
-                                        "flex items-center gap-1 text-xs tabular-nums whitespace-nowrap transition-colors duration-200",
-                                        isActive ? "text-white/40" : "text-white/20"
-                                    )}>
+                                    <div className="flex items-center gap-1 text-xs tabular-nums whitespace-nowrap transition-colors duration-200"
+                                        style={{ color: isActive ? textMuted : textSubtle }}
+                                    >
                                         <Route className="size-3 shrink-0" />
                                         {formatDistance(r.distance)}
                                     </div>
@@ -204,7 +257,7 @@ const Sidebar = ({
                     </div>
                 )}
 
-                {/* Clear Route Button — always has a red tint */}
+                {/* Clear Route Button */}
                 {(start || end) && (
                     <button
                         onClick={handleExit}

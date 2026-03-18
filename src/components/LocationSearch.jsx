@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Loader2, MapPin } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTheme } from '../context/ThemeContext';
 
 const ORS_API_KEY = import.meta.env.VITE_ORS_API_KEY;
 
@@ -12,6 +13,8 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
     const wrapperRef = useRef(null);
     const isSelectionRef = useRef(false);
     const abortControllerRef = useRef(null);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -36,7 +39,6 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
                 return;
             }
 
-            // Abort any previous in-flight request
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
             }
@@ -44,7 +46,6 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
 
             setLoading(true);
             try {
-                // OpenRouteService Geocode Autocomplete — fast, high quality
                 const params = new URLSearchParams({
                     api_key: ORS_API_KEY,
                     text: query,
@@ -87,14 +88,12 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
             }
         };
 
-        // Debounce — 200ms (faster than before since ORS is fast)
         const timeoutId = setTimeout(fetchSuggestions, 200);
         return () => {
             clearTimeout(timeoutId);
         };
     }, [query]);
 
-    // Cleanup abort controller on unmount
     useEffect(() => {
         return () => {
             if (abortControllerRef.current) abortControllerRef.current.abort();
@@ -115,8 +114,10 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
             return <Loader2 className="w-4 h-4 text-blue-400/70 animate-spin flex-shrink-0" />;
         }
         if (hideIcon) return null;
-        return <Icon className="w-4 h-4 text-white/30 flex-shrink-0" />;
+        return <Icon className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--color-icon-muted)' }} />;
     };
+
+    const borderColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
 
     return (
         <div className={cn("relative w-full", className)} ref={wrapperRef}>
@@ -136,9 +137,18 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
                         if (suggestions.length > 0) setIsOpen(true);
                     }}
                     placeholder={placeholder}
-                    className="bg-transparent border-none outline-none text-white/90 w-full placeholder-white/25 text-sm font-medium tracking-tight"
+                    className="bg-transparent border-none outline-none w-full text-sm font-medium tracking-tight"
+                    style={{
+                        color: 'var(--color-text-strong)',
+                    }}
                 />
             </div>
+            {/* Placeholder styling via CSS — the input placeholder inherits from the glass */}
+            <style>{`
+                .liquid-glass-inset input::placeholder {
+                    color: var(--color-text-subtle);
+                }
+            `}</style>
 
             {/* Suggestions Dropdown */}
             {isOpen && suggestions.length > 0 && (
@@ -147,9 +157,21 @@ const LocationSearch = ({ placeholder, onLocationSelect, icon: Icon = Search, cl
                         <div
                             key={idx}
                             onClick={() => handleSelect(s)}
-                            className="px-3.5 py-3 text-sm text-white/60 hover:text-white/90 hover:bg-white/[0.06] cursor-pointer border-b border-white/[0.04] last:border-none truncate flex items-center gap-2.5 transition-all duration-150"
+                            className="px-3.5 py-3 text-sm cursor-pointer last:border-none truncate flex items-center gap-2.5 transition-all duration-150"
+                            style={{
+                                color: 'var(--color-text-muted)',
+                                borderBottom: `1px solid ${borderColor}`,
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.color = 'var(--color-text-strong)';
+                                e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.color = 'var(--color-text-muted)';
+                                e.currentTarget.style.background = '';
+                            }}
                         >
-                            <MapPin className="w-3.5 h-3.5 text-white/20 shrink-0" />
+                            <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--color-text-subtle)' }} />
                             <span className="truncate">{s.display_name}</span>
                         </div>
                     ))}

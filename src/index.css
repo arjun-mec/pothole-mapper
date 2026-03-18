@@ -4,7 +4,7 @@
 
 /* =============================================
    Design System — Liquid Glass
-   Apple-inspired dark glass morphism
+   Dual-theme: dark (default) & light
    ============================================= */
 
 :root {
@@ -17,7 +17,7 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
-  /* Color tokens */
+  /* ── Dark palette (default) ────────────────── */
   --glass-bg: linear-gradient(145deg, rgba(20, 20, 20, 0.75), rgba(0, 0, 0, 0.85));
   --glass-bg-hover: linear-gradient(145deg, rgba(30, 30, 30, 0.78), rgba(10, 10, 10, 0.88));
   --glass-border: rgba(255, 255, 255, 0.15);
@@ -27,10 +27,114 @@
   --glass-blur: blur(24px) saturate(180%);
   --glass-radius: 16px;
 
+  /* Inset glass */
+  --glass-inset-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  --glass-inset-bg-hover: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  --glass-inset-border: rgba(255, 255, 255, 0.08);
+  --glass-inset-border-top: rgba(255, 255, 255, 0.12);
+  --glass-inset-border-hover: rgba(255, 255, 255, 0.15);
+
+  /* Semantic colors */
+  --color-bg: #050505;
+  --color-text: rgba(255, 255, 255, 0.87);
+  --color-text-strong: rgba(255, 255, 255, 0.95);
+  --color-text-muted: rgba(255, 255, 255, 0.5);
+  --color-text-subtle: rgba(255, 255, 255, 0.25);
+  --color-text-faint: rgba(255, 255, 255, 0.12);
+  --color-divider: rgba(255, 255, 255, 0.06);
+  --color-icon-muted: rgba(255, 255, 255, 0.3);
+  --color-overlay-subtle: rgba(255, 255, 255, 0.04);
+  --color-overlay-hover: rgba(255, 255, 255, 0.08);
+
+  /* Popup */
+  --popup-bg: linear-gradient(160deg, rgba(22, 22, 26, 0.96), rgba(10, 10, 14, 0.98));
+  --popup-tip-color: rgba(22, 22, 26, 0.96);
+  --popup-close-color: rgba(255, 255, 255, 0.2);
+  --popup-close-hover: rgba(255, 255, 255, 0.6);
+
+  /* Scroll */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.22);
+
+  /* Map ctrl icon */
+  --ctrl-icon-filter: invert(1) brightness(1.5);
+
   /* Scheme */
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #050505;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* ── Light palette ───────────────────────────── */
+[data-theme="light"] {
+  --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(240, 242, 248, 0.82));
+  --glass-bg-hover: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(235, 238, 245, 0.90));
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-strong: rgba(0, 0, 0, 0.14);
+  --glass-highlight: rgba(0, 0, 0, 0.03);
+  --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.08);
+
+  --glass-inset-bg: linear-gradient(145deg, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.015));
+  --glass-inset-bg-hover: linear-gradient(145deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.025));
+  --glass-inset-border: rgba(0, 0, 0, 0.06);
+  --glass-inset-border-top: rgba(0, 0, 0, 0.10);
+  --glass-inset-border-hover: rgba(0, 0, 0, 0.12);
+
+  --color-bg: #f0f2f5;
+  --color-text: rgba(15, 23, 42, 0.87);
+  --color-text-strong: rgba(15, 23, 42, 0.95);
+  --color-text-muted: rgba(15, 23, 42, 0.50);
+  --color-text-subtle: rgba(15, 23, 42, 0.30);
+  --color-text-faint: rgba(15, 23, 42, 0.10);
+  --color-divider: rgba(15, 23, 42, 0.06);
+  --color-icon-muted: rgba(15, 23, 42, 0.30);
+  --color-overlay-subtle: rgba(15, 23, 42, 0.03);
+  --color-overlay-hover: rgba(15, 23, 42, 0.06);
+
+  --popup-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(245, 247, 250, 0.98));
+  --popup-tip-color: rgba(255, 255, 255, 0.96);
+  --popup-close-color: rgba(0, 0, 0, 0.2);
+  --popup-close-hover: rgba(0, 0, 0, 0.6);
+
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+
+  --ctrl-icon-filter: none;
+
+  color-scheme: light;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* =============================================
+   Theme Transition — smooth crossfade
+   Only targets UI shells; excludes map internals.
+   ============================================= */
+
+.theme-transitioning body,
+.theme-transitioning .liquid-glass,
+.theme-transitioning .liquid-glass-inset,
+.theme-transitioning .theme-toggle-btn,
+.theme-transitioning .maplibregl-ctrl button {
+  transition:
+    background-color 0.4s ease,
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease !important;
+}
+
+.theme-transitioning h1,
+.theme-transitioning h2,
+.theme-transitioning h3,
+.theme-transitioning p,
+.theme-transitioning span,
+.theme-transitioning div:not(.map-wrap):not(.map):not([class*="maplibregl"]),
+.theme-transitioning button,
+.theme-transitioning input,
+.theme-transitioning svg {
+  transition:
+    color 0.4s ease,
+    border-color 0.4s ease !important;
 }
 
 /* =============================================
@@ -42,7 +146,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow: hidden;
-  background: #050505;
+  background: var(--color-bg);
 }
 
 #root {
@@ -56,7 +160,12 @@ body {
   color: white;
 }
 
-/* Scrollbar — thin, glass-themed */
+[data-theme="light"] ::selection {
+  background: rgba(99, 102, 241, 0.25);
+  color: #0f172a;
+}
+
+/* Scrollbar — thin, themed */
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -66,12 +175,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--scrollbar-thumb);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* =============================================
@@ -94,19 +203,23 @@ body {
   box-shadow: 0 14px 48px 0 rgba(0, 0, 0, 0.8);
 }
 
+[data-theme="light"] .liquid-glass:hover {
+  box-shadow: 0 14px 48px 0 rgba(0, 0, 0, 0.12);
+}
+
 /* Inset glass — for nested panels like route options */
 .liquid-glass-inset {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  background: var(--glass-inset-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--glass-inset-border);
+  border-top-color: var(--glass-inset-border-top);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .liquid-glass-inset:hover {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-inset-bg-hover);
+  border-color: var(--glass-inset-border-hover);
 }
 
 /* =============================================
@@ -142,16 +255,20 @@ body {
   border-color: var(--glass-border-strong) !important;
 }
 
+[data-theme="light"] .maplibregl-ctrl button:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
 .maplibregl-ctrl button:active {
   transform: translateY(0);
 }
 
 /* Map control icons */
 .maplibregl-ctrl-icon {
-  filter: invert(1) brightness(1.5);
+  filter: var(--ctrl-icon-filter);
   opacity: 0.8;
   transform: scale(0.85);
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, filter 0.4s ease;
 }
 
 .maplibregl-ctrl button:hover .maplibregl-ctrl-icon {
@@ -266,23 +383,27 @@ body {
    ============================================= */
 
 .pothole-popup .maplibregl-popup-content {
-  background: linear-gradient(160deg, rgba(22, 22, 26, 0.96), rgba(10, 10, 14, 0.98)) !important;
+  background: var(--popup-bg) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--glass-border) !important;
   border-radius: 14px !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
   padding: 0 !important;
   overflow: hidden;
 }
 
+[data-theme="light"] .pothole-popup .maplibregl-popup-content {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 0px 1px rgba(0, 0, 0, 0.03) !important;
+}
+
 .pothole-popup .maplibregl-popup-tip {
-  border-top-color: rgba(22, 22, 26, 0.96) !important;
-  border-bottom-color: rgba(22, 22, 26, 0.96) !important;
+  border-top-color: var(--popup-tip-color) !important;
+  border-bottom-color: var(--popup-tip-color) !important;
 }
 
 .pothole-popup .maplibregl-popup-close-button {
-  color: rgba(255, 255, 255, 0.2) !important;
+  color: var(--popup-close-color) !important;
   font-size: 16px;
   padding: 4px 8px;
   transition: color 0.15s;
@@ -290,7 +411,7 @@ body {
 }
 
 .pothole-popup .maplibregl-popup-close-button:hover {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--popup-close-hover) !important;
   background: transparent !important;
 }
 
@@ -333,14 +454,14 @@ body {
   gap: 4px;
   padding: 3px 8px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-overlay-subtle);
+  border: 1px solid var(--glass-inset-border);
 }
 
 .pp-type-chip span {
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
   letter-spacing: 0.02em;
 }
 
@@ -414,7 +535,7 @@ body {
 
 .pp-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--color-divider);
   margin-bottom: 12px;
 }
 
@@ -434,7 +555,7 @@ body {
 
 .pp-info-text {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
@@ -449,7 +570,34 @@ input:focus-visible {
 }
 
 button:focus-visible {
-  outline: 1px solid rgba(255, 255, 255, 0.1);
+  outline: 1px solid var(--glass-border);
   outline-offset: 1px;
   border-radius: inherit;
+}
+
+/* =============================================
+   Theme Toggle Button
+   ============================================= */
+
+.theme-toggle-btn {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-top-color: var(--glass-border-strong);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--glass-radius);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-strong);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0) scale(0.96);
 }

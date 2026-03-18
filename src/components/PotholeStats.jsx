@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Activity, TrendingUp, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const getMetrics = (items) => {
     if (items.length === 0) return { count: 0, avg: 0, peak: 0 };
@@ -33,13 +34,23 @@ const getSeverityCounts = (potholes) => {
 
 const PotholeStats = ({ potholes = [], loading = false }) => {
     const [expanded, setExpanded] = useState(false);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
+
+    // Theme-aware styles
+    const textStrong = 'var(--color-text-strong)';
+    const textMuted = 'var(--color-text-muted)';
+    const textSubtle = 'var(--color-text-subtle)';
+    const textFaint = 'var(--color-text-faint)';
+    const dividerBg = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+    const barTrackBg = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
 
     if (loading) {
         return (
             <div className="absolute bottom-4 left-4 z-20 pointer-events-auto">
                 <div className="liquid-glass rounded-2xl px-5 py-4 flex items-center gap-3">
                     <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
-                    <span className="text-xs text-white/50 font-medium">Loading data...</span>
+                    <span className="text-xs font-medium" style={{ color: textMuted }}>Loading data...</span>
                 </div>
             </div>
         );
@@ -68,7 +79,6 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                 <button
                     onClick={() => setExpanded(true)}
                     className="liquid-glass rounded-2xl px-4 py-3 flex items-center gap-3 hover:brightness-110 transition-all duration-200 cursor-pointer border-0 outline-none"
-                    style={{ background: 'linear-gradient(160deg, rgba(22,22,26,0.92), rgba(10,10,14,0.96))' }}
                 >
                     <div className="w-7 h-7 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
                         <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
@@ -77,11 +87,11 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                     <div className="flex items-center gap-4">
                         {/* Total */}
                         <div className="text-center">
-                            <div className="text-base font-bold text-white/90 tabular-nums leading-none">{potholes.length}</div>
-                            <div className="text-[8px] text-white/30 font-medium uppercase tracking-wider mt-0.5">Total</div>
+                            <div className="text-base font-bold tabular-nums leading-none" style={{ color: textStrong }}>{potholes.length}</div>
+                            <div className="text-[8px] font-medium uppercase tracking-wider mt-0.5" style={{ color: textSubtle }}>Total</div>
                         </div>
 
-                        <div className="w-px h-5 bg-white/8"></div>
+                        <div className="w-px h-5" style={{ background: textFaint }}></div>
 
                         {/* Shock peak */}
                         <div className="text-center">
@@ -89,13 +99,13 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5">
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
-                                <span className="text-sm font-bold text-white/85 tabular-nums leading-none">{shockMetrics.peak.toFixed(2)}</span>
+                                <span className="text-sm font-bold tabular-nums leading-none" style={{ color: textStrong }}>{shockMetrics.peak.toFixed(2)}</span>
                                 <span className="text-[8px] text-amber-400 font-semibold">g</span>
                             </div>
-                            <div className="text-[8px] text-white/25 font-medium uppercase tracking-wider mt-0.5">Peak</div>
+                            <div className="text-[8px] font-medium uppercase tracking-wider mt-0.5" style={{ color: textSubtle }}>Peak</div>
                         </div>
 
-                        <div className="w-px h-5 bg-white/8"></div>
+                        <div className="w-px h-5" style={{ background: textFaint }}></div>
 
                         {/* Rocking peak */}
                         <div className="text-center">
@@ -104,14 +114,14 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                                     <path d="M23 4v6h-6M1 20v-6h6" />
                                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                                 </svg>
-                                <span className="text-sm font-bold text-white/85 tabular-nums leading-none">{rockingMetrics.peak.toFixed(0)}</span>
+                                <span className="text-sm font-bold tabular-nums leading-none" style={{ color: textStrong }}>{rockingMetrics.peak.toFixed(0)}</span>
                                 <span className="text-[8px] text-violet-400 font-semibold">°/s</span>
                             </div>
-                            <div className="text-[8px] text-white/25 font-medium uppercase tracking-wider mt-0.5">Peak</div>
+                            <div className="text-[8px] font-medium uppercase tracking-wider mt-0.5" style={{ color: textSubtle }}>Peak</div>
                         </div>
                     </div>
 
-                    <ChevronUp className="w-3.5 h-3.5 text-white/25 ml-1 shrink-0" />
+                    <ChevronUp className="w-3.5 h-3.5 ml-1 shrink-0" style={{ color: textSubtle }} />
                 </button>
             </div>
         );
@@ -127,8 +137,8 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                         <AlertTriangle className="w-4 h-4 text-red-400" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-semibold text-white/90 leading-tight">Pothole Monitor</h3>
-                        <p className="text-[10px] text-white/35 font-medium">Real-time detection data</p>
+                        <h3 className="text-sm font-semibold leading-tight" style={{ color: textStrong }}>Pothole Monitor</h3>
+                        <p className="text-[10px] font-medium" style={{ color: textSubtle }}>Real-time detection data</p>
                     </div>
                     <div className="ml-auto flex items-center gap-2">
                         <div className="flex items-center gap-1.5">
@@ -137,17 +147,21 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                         </div>
                         <button
                             onClick={() => setExpanded(false)}
-                            className="w-6 h-6 rounded-lg bg-white/5 hover:bg-white/10 border border-white/8 flex items-center justify-center transition-colors cursor-pointer outline-none"
+                            className="w-6 h-6 rounded-lg flex items-center justify-center transition-colors cursor-pointer outline-none"
+                            style={{
+                                background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                            }}
                         >
-                            <ChevronDown className="w-3 h-3 text-white/40" />
+                            <ChevronDown className="w-3 h-3" style={{ color: textMuted }} />
                         </button>
                     </div>
                 </div>
 
                 {/* Total count */}
                 <div className="liquid-glass-inset rounded-xl px-3 py-2 mb-3 flex items-center justify-between">
-                    <span className="text-[10px] text-white/35 font-semibold uppercase tracking-wider">Total Detections</span>
-                    <span className="text-lg font-bold text-white/90 tabular-nums leading-none">{potholes.length}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: textSubtle }}>Total Detections</span>
+                    <span className="text-lg font-bold tabular-nums leading-none" style={{ color: textStrong }}>{potholes.length}</span>
                 </div>
 
                 {/* Sensor metrics — stacked */}
@@ -158,29 +172,29 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5">
                                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                             </svg>
-                            <span className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">Shock</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: textMuted }}>Shock</span>
                             <span className="text-[9px] text-amber-400 font-semibold ml-auto">g</span>
                         </div>
                         <div className="flex items-end justify-between gap-1">
                             <div className="text-center flex-1">
-                                <div className="text-base font-bold text-white/90 tabular-nums leading-none mb-0.5">{shockMetrics.count}</div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Count</div>
+                                <div className="text-base font-bold tabular-nums leading-none mb-0.5" style={{ color: textStrong }}>{shockMetrics.count}</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Count</div>
                             </div>
-                            <div className="w-px h-6 bg-white/5"></div>
+                            <div className="w-px h-6" style={{ background: dividerBg }}></div>
                             <div className="text-center flex-1">
                                 <div className="flex items-center justify-center gap-0.5 mb-0.5">
                                     <Activity className="w-2.5 h-2.5 text-amber-400/60" />
-                                    <span className="text-base font-bold text-white/90 tabular-nums leading-none">{shockMetrics.avg.toFixed(2)}</span>
+                                    <span className="text-base font-bold tabular-nums leading-none" style={{ color: textStrong }}>{shockMetrics.avg.toFixed(2)}</span>
                                 </div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Avg</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Avg</div>
                             </div>
-                            <div className="w-px h-6 bg-white/5"></div>
+                            <div className="w-px h-6" style={{ background: dividerBg }}></div>
                             <div className="text-center flex-1">
                                 <div className="flex items-center justify-center gap-0.5 mb-0.5">
                                     <TrendingUp className="w-2.5 h-2.5 text-red-400/60" />
-                                    <span className="text-base font-bold text-white/90 tabular-nums leading-none">{shockMetrics.peak.toFixed(2)}</span>
+                                    <span className="text-base font-bold tabular-nums leading-none" style={{ color: textStrong }}>{shockMetrics.peak.toFixed(2)}</span>
                                 </div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Peak</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Peak</div>
                             </div>
                         </div>
                     </div>
@@ -192,29 +206,29 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                                 <path d="M23 4v6h-6M1 20v-6h6" />
                                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                             </svg>
-                            <span className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">Rocking</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: textMuted }}>Rocking</span>
                             <span className="text-[9px] text-violet-400 font-semibold ml-auto">°/s</span>
                         </div>
                         <div className="flex items-end justify-between gap-1">
                             <div className="text-center flex-1">
-                                <div className="text-base font-bold text-white/90 tabular-nums leading-none mb-0.5">{rockingMetrics.count}</div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Count</div>
+                                <div className="text-base font-bold tabular-nums leading-none mb-0.5" style={{ color: textStrong }}>{rockingMetrics.count}</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Count</div>
                             </div>
-                            <div className="w-px h-6 bg-white/5"></div>
+                            <div className="w-px h-6" style={{ background: dividerBg }}></div>
                             <div className="text-center flex-1">
                                 <div className="flex items-center justify-center gap-0.5 mb-0.5">
                                     <Activity className="w-2.5 h-2.5 text-violet-400/60" />
-                                    <span className="text-base font-bold text-white/90 tabular-nums leading-none">{rockingMetrics.avg.toFixed(0)}</span>
+                                    <span className="text-base font-bold tabular-nums leading-none" style={{ color: textStrong }}>{rockingMetrics.avg.toFixed(0)}</span>
                                 </div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Avg</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Avg</div>
                             </div>
-                            <div className="w-px h-6 bg-white/5"></div>
+                            <div className="w-px h-6" style={{ background: dividerBg }}></div>
                             <div className="text-center flex-1">
                                 <div className="flex items-center justify-center gap-0.5 mb-0.5">
                                     <TrendingUp className="w-2.5 h-2.5 text-red-400/60" />
-                                    <span className="text-base font-bold text-white/90 tabular-nums leading-none">{rockingMetrics.peak.toFixed(0)}</span>
+                                    <span className="text-base font-bold tabular-nums leading-none" style={{ color: textStrong }}>{rockingMetrics.peak.toFixed(0)}</span>
                                 </div>
-                                <div className="text-[8px] text-white/25 font-medium uppercase">Peak</div>
+                                <div className="text-[8px] font-medium uppercase" style={{ color: textSubtle }}>Peak</div>
                             </div>
                         </div>
                     </div>
@@ -222,15 +236,15 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
 
                 {/* Severity Distribution */}
                 <div className="flex flex-col gap-1.5">
-                    <div className="text-[10px] text-white/30 font-semibold uppercase tracking-widest mb-0.5">Severity Distribution</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-widest mb-0.5" style={{ color: textSubtle }}>Severity Distribution</div>
                     {severityBars.map(({ label, count, color }) => (
                         <div key={label} className="flex items-center gap-2.5">
                             <span
                                 className="w-1.5 h-1.5 rounded-full shrink-0"
                                 style={{ background: color, boxShadow: `0 0 6px ${color}66` }}
                             />
-                            <span className="text-[11px] text-white/50 font-medium w-14">{label}</span>
-                            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                            <span className="text-[11px] font-medium w-14" style={{ color: textMuted }}>{label}</span>
+                            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: barTrackBg }}>
                                 <div
                                     className="h-full rounded-full transition-all duration-700 ease-out"
                                     style={{
@@ -240,7 +254,7 @@ const PotholeStats = ({ potholes = [], loading = false }) => {
                                     }}
                                 />
                             </div>
-                            <span className="text-[11px] text-white/40 tabular-nums font-semibold w-5 text-right">{count}</span>
+                            <span className="text-[11px] tabular-nums font-semibold w-5 text-right" style={{ color: textMuted }}>{count}</span>
                         </div>
                     ))}
                 </div>
