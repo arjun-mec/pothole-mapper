@@ -576,6 +576,91 @@ button:focus-visible {
 }
 
 /* =============================================
+   Nav Pill — Top Center Navigation
+   ============================================= */
+
+.nav-pill-container {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9999px;
+}
+
+.nav-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  position: relative;
+  outline: none;
+}
+
+.nav-pill-btn:hover {
+  color: var(--color-text);
+  background: var(--color-overlay-hover);
+}
+
+.nav-pill-btn-active {
+  color: var(--color-text-strong);
+  background: var(--glass-inset-bg);
+  border: 1px solid var(--glass-inset-border);
+  border-top-color: var(--glass-inset-border-top);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.nav-pill-btn-active:hover {
+  background: var(--glass-inset-bg-hover);
+  border-color: var(--glass-inset-border-hover);
+}
+
+[data-theme="light"] .nav-pill-btn-active {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.nav-pill-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+
+.nav-pill-label {
+  line-height: 1;
+}
+
+/* Theme transition for nav pill */
+.theme-transitioning .nav-pill,
+.theme-transitioning .nav-pill-btn {
+  transition:
+    background-color 0.4s ease,
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    color 0.4s ease !important;
+}
+
+/* =============================================
    Theme Toggle Button
    ============================================= */
 
@@ -600,4 +685,511 @@ button:focus-visible {
 
 .theme-toggle-btn:active {
   transform: translateY(0) scale(0.96);
+}
+
+/* =============================================
+   Logs Page — Detection Log Table
+   ============================================= */
+
+.logs-page {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 72px 24px 24px;
+  background: var(--color-bg);
+  overflow-y: auto;
+}
+
+.logs-container {
+  width: 100%;
+  max-width: 1200px;
+  border-radius: var(--glass-radius);
+  overflow: hidden;
+  animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ── Header ─────────────────────────────── */
+
+.logs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-divider);
+  flex-wrap: wrap;
+}
+
+.logs-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logs-header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logs-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.logs-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  margin: 2px 0 0;
+}
+
+.logs-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Filter pills ───────────────────────── */
+
+.logs-filter-pills {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 9999px;
+  background: var(--glass-inset-bg);
+  border: 1px solid var(--glass-inset-border);
+}
+
+.logs-filter-pill {
+  padding: 5px 14px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.logs-filter-pill:hover {
+  color: var(--color-text);
+  background: var(--color-overlay-hover);
+}
+
+.logs-filter-pill-active {
+  color: var(--color-text-strong);
+  background: var(--glass-inset-bg-hover);
+  border: 1px solid var(--glass-inset-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .logs-filter-pill-active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Search ──────────────────────────────── */
+
+.logs-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  min-width: 180px;
+}
+
+.logs-search-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.logs-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  width: 100%;
+}
+
+.logs-search-input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+/* ── Table ───────────────────────────────── */
+
+.logs-table-wrap {
+  overflow-x: auto;
+  min-height: 200px;
+}
+
+.logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.logs-th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-divider);
+  user-select: none;
+}
+
+.logs-th-num {
+  width: 48px;
+  text-align: center;
+}
+
+.logs-th-sortable {
+  cursor: pointer;
+  transition: color 0.15s;
+  display: table-cell;
+}
+
+.logs-th-sortable > span {
+  display: inline;
+}
+
+.logs-th-sortable:hover {
+  color: var(--color-text) !important;
+}
+
+.logs-sort-icon {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+}
+
+.logs-th-sortable:hover .logs-sort-icon {
+  opacity: 0.6;
+}
+
+.logs-sort-active {
+  opacity: 0.9 !important;
+  color: #818cf8;
+}
+
+/* ── Table rows ──────────────────────────── */
+
+.logs-tr {
+  border-bottom: 1px solid var(--color-divider);
+  transition: background 0.15s;
+}
+
+.logs-tr:hover {
+  background: var(--color-overlay-subtle);
+}
+
+.logs-tr:last-child {
+  border-bottom: none;
+}
+
+.logs-td {
+  padding: 10px 16px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.logs-td-num {
+  text-align: center;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Type chip ───────────────────────────── */
+
+.logs-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Severity badge ──────────────────────── */
+
+.logs-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 7px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.logs-severity-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Value ───────────────────────────────── */
+
+.logs-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Location ────────────────────────────── */
+
+.logs-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Timestamp ───────────────────────────── */
+
+.logs-timestamp {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Empty state ─────────────────────────── */
+
+.logs-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+}
+
+.logs-empty-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-text-faint);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Footer / Pagination ─────────────────── */
+
+.logs-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.logs-footer-info {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.logs-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.logs-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.logs-page-btn:hover:not(:disabled) {
+  background: var(--color-overlay-hover);
+  color: var(--color-text);
+}
+
+.logs-page-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.logs-page-btn-active {
+  background: var(--glass-inset-bg);
+  border-color: var(--glass-inset-border);
+  color: var(--color-text-strong);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .logs-page-btn-active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.logs-page-ellipsis {
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+/* ── Theme transition for logs ───────────── */
+
+.theme-transitioning .logs-page,
+.theme-transitioning .logs-container,
+.theme-transitioning .logs-tr,
+.theme-transitioning .logs-filter-pill,
+.theme-transitioning .logs-page-btn {
+  transition:
+    background-color 0.4s ease,
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    color 0.4s ease !important;
+}
+
+/* =============================================
+   Statistics Page — Bento Grid Layout
+   ============================================= */
+
+.stats-page {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: var(--color-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 72px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.stats-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+/* ── Bento row — flex wrap for responsive ──── */
+
+.stats-bento-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.stats-kpi-row {
+  flex-wrap: wrap;
+}
+
+.stats-kpi-row > * {
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.stats-charts-row {
+  flex-wrap: wrap;
+}
+
+/* ── Recharts responsive overrides ─────────── */
+
+.recharts-wrapper {
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+.recharts-legend-item-text {
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke-opacity: 0.5;
+}
+
+/* ── Pulse animation for "Live" dot ────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── Theme transition for stats ────────────── */
+
+.theme-transitioning .stats-page,
+.theme-transitioning .stats-scroll {
+  transition:
+    background-color 0.4s ease,
+    background 0.4s ease !important;
+}
+
+/* ── Responsive: smaller screens ───────────── */
+
+@media (max-width: 768px) {
+  .stats-scroll {
+    padding: 68px 16px 32px;
+    gap: 12px;
+  }
+
+  .stats-bento-row {
+    flex-direction: column;
+  }
+
+  .stats-kpi-row > * {
+    flex: 1 1 100%;
+  }
+
+  .stats-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
