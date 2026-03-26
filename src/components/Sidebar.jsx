@@ -1,21 +1,63 @@
-import React, { useState } from 'react';
-import { Search, X, Route, Clock, ArrowUpDown } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, X, Route, Clock, ArrowUpDown, AlertTriangle } from 'lucide-react';
 import { cn } from '../lib/utils';
 import LocationSearch from './LocationSearch';
 import { useTheme } from '../context/ThemeContext';
+
+// ── Pothole-near-route helpers ──────────────────────────────
+const BUFFER_M = 20; // metres from route centreline
+
+/** Shortest distance (in metres) from point P to segment AB, all in [lng, lat]. */
+const pointToSegmentDist = (p, a, b) => {
+    const toRad = (d) => (d * Math.PI) / 180;
+    const avgLat = toRad((p[1] + a[1] + b[1]) / 3);
+    const mPerLng = 111_320 * Math.cos(avgLat);
+    const mPerLat = 110_540;
+
+    // Project into a local metre grid
+    const px = (p[0] - a[0]) * mPerLng, py = (p[1] - a[1]) * mPerLat;
+    const bx = (b[0] - a[0]) * mPerLng, by = (b[1] - a[1]) * mPerLat;
+    const lenSq = bx * bx + by * by;
+    let t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, (px * bx + py * by) / lenSq));
+    const dx = px - t * bx, dy = py - t * by;
+    return Math.sqrt(dx * dx + dy * dy);
+};
+
+/** Count potholes within BUFFER_M of a polyline given as [[lng,lat], …]. */
+const countPotholesAlongRoute = (coords, potholes) => {
+    if (!coords || coords.length < 2 || !potholes || potholes.length === 0) return 0;
+    let count = 0;
+    for (const p of potholes) {
+        const pt = [p.lng, p.lat];
+        for (let i = 0; i < coords.length - 1; i++) {
+            if (pointToSegmentDist(pt, coords[i], coords[i + 1]) <= BUFFER_M) {
+                count++;
+                break; // already counted, move to next pothole
+            }
+        }
+    }
+    return count;
+};
 
 const Sidebar = ({
     onLocationSelect,
     onRouteSelect,
     foundRoutes = [],
     selectedRouteIndex = 0,
-    onSelectRoute
+    onSelectRoute,
+    potholes = []
 }) => {
     const [start, setStart] = useState(null);
     const [end, setEnd] = useState(null);
     const [resetKey, setResetKey] = useState(0);
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+
+    // Pre-compute pothole counts per route (only recalculates when routes or potholes change)
+    const potholeCounts = useMemo(() =>
+        foundRoutes.map(r => countPotholesAlongRoute(r.coordinates, potholes)),
+        [foundRoutes, potholes]
+    );
 
     const formatDistance = (meters) => {
         if (meters < 1000) return `${Math.round(meters)} m`;
@@ -239,6 +281,28 @@ const Sidebar = ({
                                         <Route className="size-3 shrink-0" />
                                         {formatDistance(r.distance)}
                                     </div>
+
+                                    {/* Pothole count */}
+                                    {(() => {
+                                        const count = potholeCounts[i] ?? 0;
+                                        const pColor = count === 0
+                                            ? { text: '#10b981', bg: 'rgba(16,185,129,0.10)', border: 'rgba(16,185,129,0.25)' }
+                                            : count <= 3
+                                                ? { text: '#eab308', bg: 'rgba(234,179,8,0.10)', border: 'rgba(234,179,8,0.25)' }
+                                                : { text: '#ef4444', bg: 'rgba(239,68,68,0.10)', border: 'rgba(239,68,68,0.25)' };
+                                        return (
+                                            <div className="flex items-center gap-1 text-[11px] font-medium tabular-nums whitespace-nowrap transition-all duration-200 px-1.5 py-0.5 rounded-md"
+                                                style={{
+                                                    color: isActive ? pColor.text : (isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.25)'),
+                                                    background: isActive ? pColor.bg : 'transparent',
+                                                    border: `1px solid ${isActive ? pColor.border : 'transparent'}`,
+                                                }}
+                                            >
+                                                <AlertTriangle className="size-3 shrink-0" />
+                                                {count}
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* Fastest badge */}
                                     {isFastest && (

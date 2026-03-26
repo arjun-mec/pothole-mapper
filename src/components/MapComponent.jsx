@@ -490,7 +490,8 @@ const MapComponent = ({ targetLocation, route, onRoutesFound, selectedRouteIndex
                 if (allRoutes.length > 0) {
                     setLastRouteData(allRoutes);
                     const routeInfos = allRoutes.map((r, i) => ({
-                        distance: r.distance, duration: r.duration, index: i
+                        distance: r.distance, duration: r.duration, index: i,
+                        coordinates: r.geometry.coordinates
                     }));
                     if (onRoutesFound) onRoutesFound(routeInfos);
                     const allBounds = new maplibregl.LngLatBounds();

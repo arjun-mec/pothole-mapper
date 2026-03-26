@@ -87,6 +87,7 @@ function AppContent() {
             foundRoutes={foundRoutes}
             selectedRouteIndex={selectedRouteIndex}
             onSelectRoute={setSelectedRouteIndex}
+            potholes={potholes}
           />
         </>
       )}
